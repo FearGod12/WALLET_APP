@@ -47,10 +47,11 @@ class Wallet(BaseModel, Base):
     
     def transfer(self, amount, reciepient_wallet_id):
         from models import storage
-    
         assert self.balance >= amount > 0, "Insufficient balance for transfer"
         transaction = Transaction(type='transfer', wallet_id = self.id, initial_balance = self.balance)
         reciepient_wallet = storage.get(Wallet, id=reciepient_wallet_id)
+        # reciepient_wallet_user = storage.get(User, attr=wallet)
+        print(reciepient_wallet.user_id)
         if reciepient_wallet:
             self.balance -= amount
             reciepient_wallet.balance += amount

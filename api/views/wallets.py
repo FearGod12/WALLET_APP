@@ -179,6 +179,8 @@ def transfer(wallet_id):
     try:
         print("im here")
         balance, recipient_wallet = wallet.transfer(amount, recipient_id)
+        # recipient_wallet_user = storage.get(User)
+        # print(recipient_wallet)
         return jsonify({"message": f"Transfer of {amount} to {recipient_wallet.user.firstname} {recipient_wallet.user.surname} {recipient_id} was successful",
                             "My wallet": wallet.to_dict()}), 200
     except AssertionError as e:
