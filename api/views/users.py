@@ -85,6 +85,8 @@ def update_user(user_id):
         data.pop('id')
     if 'password' in data:
         data.pop('password')
+    if 'email' in data:
+        data.pop('email')
     try:
         for key, value in data.items():
             setattr(user, key, value)
@@ -119,7 +121,6 @@ def delete_user(user_id):
 
 
 @app_views.route('/login', methods=['POST'])
-@token_required
 def login():
     # Get the user object based on credentials
     data = request.get_json(silent=True)
@@ -132,7 +133,7 @@ def login():
         return abort(401, {"error": "Invalid password"})
     token  = create_jwt_token(user.id)
     response = jsonify({"token": token, "user": user.to_dict()})
-    response.headers['Authorizatio'] = f"Bearer {token}"
+    response.headers['Authorization'] = f"Bearer {token}"
     return response, 200
         
 @app_views.route('/logout', methods=['GET'])
@@ -140,18 +141,18 @@ def login():
 def logout():
     return jsonify({"message": "User logged out"}), 200
 
-
 @app_views.route('/users/me', methods=['GET'])
 @token_required
 def get_current_user():
     """
     Returns the user object of the currently logged in user
     """
-    # token = decode_jwt_token(request.headers.get('Authorization'))
-    # if not token:
-    #     abort(401)
-    # print("user_id :", user_id)
-    # user = storage.get(User, user_id)
-    # if not user:
-    #     abort(404)
-    return "it have passed"
+    token = request.headers.get("Authorization")
+    if token:
+        token = token.split()[1]
+    payload = decode_jwt_token(token)
+    
+    user = storage.get(User, payload['sub'])
+    if not user:
+        abort(404)
+    return jsonify(user.to_dict())

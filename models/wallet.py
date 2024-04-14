@@ -13,7 +13,7 @@ class Wallet(BaseModel, Base):
     __tablename__ = 'wallets'
 
     id = Column(String, primary_key=True)
-    user_id = Column(String, ForeignKey('users.id'))
+    user_id = Column(String, ForeignKey('users.id'), nullable=False)
     balance = Column(Integer, default=0)
     wallet_type = Column(String(255), nullable=False)
 
